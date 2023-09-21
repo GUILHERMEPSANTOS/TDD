@@ -1,4 +1,6 @@
-﻿namespace NerdStore.Vendas.Domain
+﻿using NerdStore.Core.DomainObjects;
+
+namespace NerdStore.Vendas.Domain
 {
     public class PedidoItem
     {
@@ -10,6 +12,8 @@
 
         public PedidoItem(Guid id, Guid produtoId, string produtoNome, int quantidade, int valorUnitario)
         {
+            ValidarSeQuantidadeEhValida(quantidade);
+
             Id = id;
             ProdutoId = produtoId;
             ProdutoNome = produtoNome;
@@ -22,9 +26,21 @@
             Quantidade += unidades;
         }
 
-        public decimal CalcularValor()
+        internal decimal CalcularValor()
         {
             return Quantidade * ValorUnitario;
+        }
+
+        internal void AtualizarQuantidade(int quantidade)
+        {
+            ValidarSeQuantidadeEhValida(quantidade);
+            Quantidade = quantidade;
+        }
+
+        internal void ValidarSeQuantidadeEhValida(int quantidade)
+        {
+            if (quantidade > Pedido.MAX_UNIDADES_PERMITIDAS) throw new DomainException($"O item ultrapassou a quantidade máxima permitida de {Pedido.MAX_UNIDADES_PERMITIDAS}");
+            if (quantidade < Pedido.MIX_UNIDADES_PERMITIDAS) throw new DomainException($"Quantidade de itens abaixo da permitida que é {Pedido.MAX_UNIDADES_PERMITIDAS}");
         }
     }
 }
