@@ -21,6 +21,17 @@ namespace NerdStore.Vendas.Domain
         {
             Status = PedidoStatus.Rascunho;
         }
+        
+        public void RemoverItem(Guid produtoId)
+        {
+            ValidarSeItemEhInexistente(produtoId);
+
+            var itemExistente = ObterItemPorProdutoId(produtoId);
+
+            _pedidoItems.Remove(itemExistente);
+
+            CalcularValorTotal();   
+        }
 
         public void AtualizarItem(int quantidade, Guid produtoId)
         {
