@@ -147,5 +147,53 @@ namespace NerdStore.Vendas.Domain.Tests
             //Assert
             Assert.Equal(expected: 100, pedido.ValorTotal);
         }
+
+        [Fact(DisplayName = "Remover item do pedido inexistente")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void RemoverItemPedido_ItemInexistente_DeveRetornarException()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var produtoId = Guid.NewGuid();
+            //Act & Assert
+            Assert.Throws<DomainException>(() => pedido.RemoverItem(produtoId));
+        }
+
+        [Fact(DisplayName = "Remover item do pedido existente")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void RemoverItemPedido_ItemExistente_DeveRemoverItemDoPedido()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var produtoId = Guid.NewGuid();
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 3, 100);
+            pedido.AdicionarItem(pedidoItem);
+
+            //Act
+            pedido.RemoverItem(produtoId);
+
+            //Assert
+            Assert.Empty(pedido.PedidoItems);
+        }
+
+        [Fact(DisplayName = "Remover item do pedido existente deve calcular valor pedido")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void RemoverItemPedido_ItemExistente_DeveRecalcularValorTatol()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var produtoId = Guid.NewGuid();
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 2, 100);
+            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 3, 100);
+            pedido.AdicionarItem(pedidoItem);
+            pedido.AdicionarItem(pedidoItem2);
+
+            //Act
+            pedido.RemoverItem(produtoId);
+
+            //Assert
+            Assert.Equal(expected: 300, actual: pedido.ValorTotal);
+
+        }
     }
 }
