@@ -1,4 +1,5 @@
-﻿using NerdStore.Core.DomainObjects;
+﻿
+using NerdStore.Core.DomainObjects;
 
 namespace NerdStore.Vendas.Domain
 {
