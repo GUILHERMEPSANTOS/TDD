@@ -1,4 +1,5 @@
 ﻿
+using FluentValidation.Results;
 using NerdStore.Core.DomainObjects;
 
 namespace NerdStore.Vendas.Domain
@@ -7,9 +8,12 @@ namespace NerdStore.Vendas.Domain
     {
         public const int MAX_UNIDADES_PERMITIDAS = 15;
         public const int MIX_UNIDADES_PERMITIDAS = 1;
-        public Guid ClienteId { get; set; }
+        public Guid ClienteId { get; private set; }
         public decimal ValorTotal { get; private set; }
+        public decimal Desconto { get; set; }
         public PedidoStatus Status { get; private set; }
+        public Voucher Voucher { get; private set; }
+        public bool VoucherUtilizado { get; private set; }
         private readonly List<PedidoItem> _pedidoItems;
         public IReadOnlyCollection<PedidoItem> PedidoItems => _pedidoItems;
 
@@ -22,7 +26,24 @@ namespace NerdStore.Vendas.Domain
         {
             Status = PedidoStatus.Rascunho;
         }
-        
+
+        public ValidationResult AplicarVoucher(Voucher voucher)
+        {
+            var ehValido = voucher.ValidarSeEhValido();
+
+            if (!ehValido.IsValid)
+            {
+                return ehValido;
+            }
+
+            Voucher = voucher;
+            VoucherUtilizado = true;
+
+            CalcularDesconto();
+
+            return ehValido;
+        }
+
         public void RemoverItem(Guid produtoId)
         {
             ValidarSeItemEhInexistente(produtoId);
@@ -31,13 +52,13 @@ namespace NerdStore.Vendas.Domain
 
             _pedidoItems.Remove(itemExistente);
 
-            CalcularValorTotal();   
+            CalcularValorTotal();
         }
 
         public void AtualizarItem(int quantidade, Guid produtoId)
         {
             ValidarSeItemEhInexistente(produtoId);
-            
+
             var item = ObterItemPorProdutoId(produtoId);
             item.AtualizarQuantidade(quantidade);
 
@@ -98,6 +119,30 @@ namespace NerdStore.Vendas.Domain
         public void CalcularValorTotal()
         {
             ValorTotal = _pedidoItems.Sum(pedidoItem => pedidoItem.CalcularValor());
+
+            CalcularDesconto();
+        }
+
+        public void CalcularDesconto()
+        {
+            if (!VoucherUtilizado) return;
+
+            decimal desconto = 0;
+
+            if (Voucher.TipoDesconto == TipoDesconto.ValorFixo)
+            {
+                desconto = Voucher.ValorDesconto ?? 0;
+            }
+            else if (Voucher.TipoDesconto == TipoDesconto.Percentual)
+            {
+                if (Voucher.PercentualDesconto.HasValue)
+                {
+                    desconto = ValorTotal * (Voucher.PercentualDesconto.Value / 100);
+                }
+            }
+
+            Desconto = desconto;
+            ValorTotal = ValorTotal - Desconto < 0 ? 0 : ValorTotal - Desconto;
         }
 
         public static class PedidoFactory
