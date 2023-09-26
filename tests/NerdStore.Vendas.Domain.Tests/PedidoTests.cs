@@ -193,7 +193,161 @@ namespace NerdStore.Vendas.Domain.Tests
 
             //Assert
             Assert.Equal(expected: 300, actual: pedido.ValorTotal);
+        }
 
+        [Fact(DisplayName = "Aplicar voucher ao pedido")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void Pedido_AplicarVoucherValido_DeveRetornarSemErros()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var voucher = new Voucher(
+               codigo: "XPHCMT",
+               dataValidade: DateTime.UtcNow,
+               ativo: true,
+               quantidade: 1,
+               tipoDesconto: TipoDesconto.ValorFixo,
+               valorDesconto: 1,
+               percentualDesconto: null
+           );
+
+            //Act
+            var resultado = pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.True(resultado.IsValid);
+        }
+
+        [Fact(DisplayName = "Aplicar voucher invalido ao pedido")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void Pedido_AplicarVoucherInvalido_DeveRetornarErros()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var voucher = new Voucher(
+               codigo: "XPHCMT",
+               dataValidade: DateTime.UtcNow,
+               ativo: true,
+               quantidade: 1,
+               tipoDesconto: TipoDesconto.ValorFixo,
+               valorDesconto: null,
+               percentualDesconto: null
+           );
+
+            //Act
+            var resultado = pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.False(resultado.IsValid);
+        }
+
+        [Fact(DisplayName = "Aplicar voucher valido deve alterar valor total pedido")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void Pedido_AplicarVoucherValorFixo_DeveAtualizarValorTotal()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var voucher = new Voucher(
+               codigo: "XPHCMT",
+               dataValidade: DateTime.UtcNow,
+               ativo: true,
+               quantidade: 1,
+               tipoDesconto: TipoDesconto.ValorFixo,
+               valorDesconto: 10,
+               percentualDesconto: null
+           );
+
+            pedido.AdicionarItem(pedidoItem);
+
+            //Act
+            var resultado = pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.True(resultado.IsValid);
+            Assert.Equal(expected: 90, actual: pedido.ValorTotal);
+        }
+
+        [Fact(DisplayName = "Aplicar voucher de desconto percentual deve alterar valor total pedido")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void Pedido_AplicarVoucherPercentual_DeveAtualizarValorTotal()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var voucher = new Voucher(
+               codigo: "XPHCMT",
+               dataValidade: DateTime.UtcNow,
+               ativo: true,
+               quantidade: 1,
+               tipoDesconto: TipoDesconto.Percentual,
+               valorDesconto: null,
+               percentualDesconto: 50
+           );
+
+            pedido.AdicionarItem(pedidoItem);
+
+            //Act
+            var resultado = pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.True(resultado.IsValid);
+            Assert.Equal(expected: 50, actual: pedido.ValorTotal);
+        }
+
+        [Fact(DisplayName = "Aplicar voucher com desconto maior que o valor total")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void Pedido_AplicarVoucherValorFixo_DeveAtualizarValorTotalPara0()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var voucher = new Voucher(
+               codigo: "XPHCMT",
+               dataValidade: DateTime.UtcNow,
+               ativo: true,
+               quantidade: 1,
+               tipoDesconto: TipoDesconto.ValorFixo,
+               valorDesconto: 1000,
+               percentualDesconto: null
+           );
+
+            pedido.AdicionarItem(pedidoItem);
+
+            //Act
+            var resultado = pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.True(resultado.IsValid);
+            Assert.Equal(expected: 0, actual: pedido.ValorTotal);
+        }
+
+        [Fact(DisplayName = "Aplicar voucher com desconto Modificar pedido")]
+        [Trait("Categoria", "Vendas - Pedido")]
+        public void Pedido_ModificarPedido_DeveAtualizarValorTotalComDesconto()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var voucher = new Voucher(
+               codigo: "XPHCMT",
+               dataValidade: DateTime.UtcNow,
+               ativo: true,
+               quantidade: 1,
+               tipoDesconto: TipoDesconto.Percentual,
+               valorDesconto: null,
+               percentualDesconto: 50
+           );
+
+            pedido.AdicionarItem(pedidoItem);
+            var resultado = pedido.AplicarVoucher(voucher);
+
+            //Act
+            pedido.AdicionarItem(pedidoItem2);
+            //Assert
+            Assert.True(resultado.IsValid);
+            Assert.Equal(expected: 100, actual: pedido.ValorTotal);
         }
     }
 }
