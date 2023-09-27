@@ -1,8 +1,9 @@
 ﻿using FluentValidation.Results;
+using MediatR;
 
 namespace NerdStore.Core.Messages
 {
-    public abstract class Command
+    public abstract class Command : IRequest<bool>
     {
         public ValidationResult ValidationResult { get; set; }
         public DateTime Timestamp { get; set; }
