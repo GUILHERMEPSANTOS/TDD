@@ -12,7 +12,7 @@ namespace NerdStore.Vendas.Domain.Tests
         {
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 2, 100);
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), "Livro", 2, 100);
 
             //Act 
             pedido.AdicionarItem(pedidoItem);
@@ -27,8 +27,8 @@ namespace NerdStore.Vendas.Domain.Tests
         {
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 2, 100);
-            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), "Livro", 2, 100);
+            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), "Livro", 1, 100);
 
             pedido.AdicionarItem(pedidoItem);
 
@@ -47,8 +47,8 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", Pedido.MAX_UNIDADES_PERMITIDAS, 100);
-            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 1, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", Pedido.MAX_UNIDADES_PERMITIDAS, 100);
+            var pedidoItem2 = new PedidoItem(produtoId, "Livro", 1, 100);
 
             pedido.AdicionarItem(pedidoItem);
 
@@ -76,7 +76,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 3, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", 3, 100);
             pedido.AdicionarItem(pedidoItem);
 
             //Act
@@ -93,7 +93,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 3, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", 3, 100);
             pedido.AdicionarItem(pedidoItem);
 
             //Act
@@ -110,7 +110,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 3, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", 3, 100);
             pedido.AdicionarItem(pedidoItem);
 
             //Act & Assert
@@ -124,7 +124,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 3, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", 3, 100);
             pedido.AdicionarItem(pedidoItem);
 
             //Act & Assert
@@ -138,7 +138,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 3, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", 3, 100);
             pedido.AdicionarItem(pedidoItem);
 
             //Act
@@ -166,7 +166,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 3, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", 3, 100);
             pedido.AdicionarItem(pedidoItem);
 
             //Act
@@ -183,8 +183,8 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), produtoId, "Livro", 2, 100);
-            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 3, 100);
+            var pedidoItem = new PedidoItem(produtoId, "Livro", 2, 100);
+            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), "Livro", 3, 100);
             pedido.AdicionarItem(pedidoItem);
             pedido.AdicionarItem(pedidoItem2);
 
@@ -247,7 +247,7 @@ namespace NerdStore.Vendas.Domain.Tests
         {
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), "Livro", 1, 100);
             var voucher = new Voucher(
                codigo: "XPHCMT",
                dataValidade: DateTime.UtcNow,
@@ -274,7 +274,7 @@ namespace NerdStore.Vendas.Domain.Tests
         {
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), "Livro", 1, 100);
             var voucher = new Voucher(
                codigo: "XPHCMT",
                dataValidade: DateTime.UtcNow,
@@ -301,7 +301,7 @@ namespace NerdStore.Vendas.Domain.Tests
         {
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), "Livro", 1, 100);
             var voucher = new Voucher(
                codigo: "XPHCMT",
                dataValidade: DateTime.UtcNow,
@@ -328,8 +328,8 @@ namespace NerdStore.Vendas.Domain.Tests
         {
             //Arrange
             var pedido = Pedido.PedidoFactory.GerarNovoPedido(Guid.NewGuid());
-            var pedidoItem = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
-            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), Guid.NewGuid(), "Livro", 1, 100);
+            var pedidoItem = new PedidoItem(Guid.NewGuid(), "Livro", 1, 100);
+            var pedidoItem2 = new PedidoItem(Guid.NewGuid(), "Livro", 1, 100);
             var voucher = new Voucher(
                codigo: "XPHCMT",
                dataValidade: DateTime.UtcNow,

@@ -55,5 +55,32 @@ namespace NerdStore.Vendas.Application.Tests.Pedidos
             Assert.Contains(AdicionarItemCommandValidation.QtdMinErroMsg, erros);
         }
 
+
+        [Fact(DisplayName = "Item command  acima da quantidade permitida deve ser invalido")]
+        [Trait("Categoria", "AdicionarItemCommand")]
+        public void AdicionarItemCommand_QuantidadeAcimaDoPermitido_NaoDevePassarPelaValidacao()
+        {
+            //Arrange
+            var itemCommand = new AdicionarItemCommand(
+                   produtoId: Guid.Empty,
+                   clienteId: Guid.Empty,
+                   nome: "",
+                   quantidade: Pedido.MAX_UNIDADES_PERMITIDAS + 1,
+                   valorUnitario: 0
+            );
+
+            //Act
+            var ehValido = itemCommand.ValidarSeEhValido();
+            //Assert
+
+            var erros = itemCommand.ValidationResult.Errors.Select(erro => erro.ErrorMessage);
+
+            Assert.False(ehValido);
+            Assert.Contains(AdicionarItemCommandValidation.IdClienteErroMsg, erros);
+            Assert.Contains(AdicionarItemCommandValidation.NomeErroMsg, erros);
+            Assert.Contains(AdicionarItemCommandValidation.ValorErroMsg, erros);
+            Assert.Contains(AdicionarItemCommandValidation.IdProdutoErroMsg, erros);
+            Assert.Contains(AdicionarItemCommandValidation.QtdMaxErroMsg, erros);
+        }
     }
 }
