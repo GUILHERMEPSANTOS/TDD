@@ -44,7 +44,7 @@ namespace NerdStore.Vendas.Application.Pedidos.Handlers
                 message.ValorUnitario
             ), cancellationToken);
 
-            return true;
+           return await _pedidoRepository.UnitOfWork.Commit();
         }
     }
 }
