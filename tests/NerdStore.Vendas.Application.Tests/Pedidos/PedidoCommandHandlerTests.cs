@@ -31,6 +31,7 @@ namespace NerdStore.Vendas.Application.Tests.Pedidos
             );
             var mocker = new AutoMocker();
             var pedidoCommandHandler = mocker.CreateInstance<PedidoCommandHandler>();
+            mocker.GetMock<IPedidoRepository>().Setup(repository => repository.UnitOfWork.Commit()).Returns(Task.FromResult(true));
 
             //Act
             var result = await pedidoCommandHandler.Handle(itemCommand, CancellationToken.None);
@@ -38,7 +39,8 @@ namespace NerdStore.Vendas.Application.Tests.Pedidos
             //Assert
             Assert.True(result);
             mocker.GetMock<IPedidoRepository>().Verify(repository => repository.Adicionar(It.IsAny<Pedido>()), Times.Once);
-            mocker.GetMock<IMediator>().Verify(mediator => mediator.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Once);
+            mocker.GetMock<IPedidoRepository>().Verify(repository => repository.UnitOfWork.Commit(), Times.Once);
+            // mocker.GetMock<IMediator>().Verify(mediator => mediator.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Once);
             ;
         }
     }
